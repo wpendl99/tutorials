@@ -6,9 +6,9 @@ class EstateProperty(models.Model):
     _name = "estate.property"
     _description = "Estate Property"
 
-    name = fields.Char("Name", required=True)
+    title = fields.Char("Title", required=True)
     description = fields.Text("Description")
-    postcode = fields.Char("Postcode")
+    postcode = fields.Char("Postcode", size=9)
     date_availability = fields.Date(
         "Available From", copy=False, default=(fields.Datetime.today() + relativedelta(months=3))
     )
