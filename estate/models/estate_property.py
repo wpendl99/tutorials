@@ -37,5 +37,9 @@ class EstateProperty(models.Model):
     )
     active = fields.Boolean("Active", default=True)
 
+    def _compute_display_name(self):
+        for record in self:
+            record.display_name = f"{record.postcode or ''} - {record.title or ''}"
+
 
 print(">>> EstateProperty model is being loaded")
