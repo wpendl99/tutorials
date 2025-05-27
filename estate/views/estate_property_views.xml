@@ -33,8 +33,10 @@
                             <field name="title" />
                         </h1>
                     </group>
+                    <field name="property_tag_ids" widget="many2many_tags" />
                     <group>
                         <group>
+                            <field name="property_type_id" />
                             <field name="postcode" />
                             <field name="date_availability" />
                         </group>
@@ -45,7 +47,7 @@
                     </group>
 
                     <notebook>
-                        <page string="Description">
+                        <page name="description" string="Description">
                             <!-- If you don't put fields inside of groups, their labels won't show -->
                             <group>
                                 <field name="description" />
@@ -56,6 +58,15 @@
                                 <field name="garden" />
                                 <field name="garden_area" />
                                 <field name="garden_orientation" />
+                            </group>
+                        </page>
+                        <page name="offers" string="Offers">
+                            <field name="offer_ids" />
+                        </page>
+                        <page name="other_info" string="Other Info">
+                            <group>
+                                <field name="salesman_id" />
+                                <field name="buyer_id" />
                             </group>
                         </page>
                     </notebook>
@@ -75,12 +86,19 @@
                 <field name="bedrooms"></field>
                 <field name="living_area"></field>
                 <field name="facades"></field>
+                <field name="property_type_id" />
+                <field name="property_tag_ids" />
 
                 <filter name="available" string="Available"
                     domain="['|', ('state', '=', 'new'), ('state', '=', 'offer_received')]" />
 
                 <group>
                     <filter name="postcode" string="Postcode" context="{'group_by': 'postcode'}" />
+                </group>
+
+                <group>
+                    <filter name="property_type" string="Property Type"
+                        context="{'group_by': 'property_type_id'}" />
                 </group>
             </search>
         </field>

@@ -37,6 +37,13 @@ class EstateProperty(models.Model):
     )
     active = fields.Boolean("Active", default=True)
 
+    # Foreign IDs
+    property_type_id = fields.Many2one("estate.property.type", string="Property Type")
+    salesman_id = fields.Many2one("res.users", string="Salesman", default=lambda self: self.env.user)
+    buyer_id = fields.Many2one("res.partner", "Buyer", copy=False)
+    property_tag_ids = fields.Many2many("estate.property.tag", string="Property Tags")
+    offer_ids = fields.One2many("estate.property.offer", "property_id", string="Offers")
+
     def _compute_display_name(self):
         for record in self:
             record.display_name = f"{record.postcode or ''} - {record.title or ''}"

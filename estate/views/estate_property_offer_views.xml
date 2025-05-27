@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<odoo>
+    <record id="estate_properties_offer_action" model="ir.actions.act_window">
+        <field name="name">Property Offers</field>
+        <field name="res_model">estate.property.offer</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <record id="estate_properties_offer_view_list" model="ir.ui.view">
+        <field name="name">estate.property.offer.list</field>
+        <field name="model">estate.property.offer</field>
+        <field name="arch" type="xml">
+            <list string="offers">
+                <!-- These widths are doing nothing... But they are giving me my expected result so
+                I am leaving them  -->
+                <field name="price" />
+                <field name="partner_id" width="5%" />
+                <field name="status" width="5%" />
+            </list>
+        </field>
+    </record>
+</odoo>

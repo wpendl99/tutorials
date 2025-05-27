@@ -4,7 +4,15 @@
     <menuitem id="estate_menu_root" name="Real Estate">
         <!-- ADVERTISEMENTS (MAIN USER MENU) -->
         <menuitem id="estate_advertisements_menu" name="Advertisements">
-            <menuitem id="estate_properties_menu_action" action="estate_properties_action"/>
+            <menuitem id="estate_properties_menu_action" action="estate_properties_action" />
+        </menuitem>
+
+        <!-- SETTINGS (MAIN USER MENU? (Maybe jsut admin?) -->
+        <menuitem
+            id="estate_settings_menu"
+            name="Settings">
+            <menuitem id="estate_properties_type_menu_action" action="estate_properties_type_action" />
+            <menuitem id="estate_properties_tag_menu_action" action="estate_properties_tag_action" />
         </menuitem>
     </menuitem>
 </odoo>
