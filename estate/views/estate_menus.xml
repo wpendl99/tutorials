@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<odoo>
+    <!-- Top menu item -->
+    <menuitem id="estate_menu_root" name="Real Estate">
+        <!-- ADVERTISEMENTS (MAIN USER MENU) -->
+        <menuitem id="estate_advertisements_menu" name="Advertisements">
+            <menuitem id="estate_properties_menu_action" action="estate_properties_action"/>
+        </menuitem>
+    </menuitem>
+</odoo>
