@@ -1,6 +1,7 @@
 from odoo import models, fields, api
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError, ValidationError
 from odoo.tools.translate import _
+from odoo.tools.float_utils import float_compare, float_is_zero
 from dateutil.relativedelta import relativedelta
 
 import logging
@@ -52,9 +53,23 @@ class EstateProperty(models.Model):
     property_tag_ids = fields.Many2many("estate.property.tag", string="Property Tags")
     offer_ids = fields.One2many("estate.property.offer", "property_id", string="Offers")
 
+    _sql_constraints = [
+        ("check_expected_price", "CHECK(expected_price > 0)", "The expected price must be a positive value"),
+        ("check_selling_price", "CHECK(selling_price > 0)", "The selling price must be a positive value"),
+        ("check_expected_price", "CHECK(expected_price > 0)", "The expected price must be a positive value"),
+    ]
+
+    @api.constrains("selling_price", "expected_price")
+    def _check_expected_price(self):
+        for record in self:
+            if float_is_zero(record.selling_price, precision_digits=2):
+                continue
+            min_selling_price = record.expected_price * 0.9
+            if float_compare(record.selling_price, min_selling_price, precision_digits=2) < 0:
+                raise ValidationError(_("The selling price cannot be lower than 90% of the expected price"))
+
     def is_available(self):
-        # self.ensure_one()
-        _logger.debug("State called: %s", self.state)
+        self.ensure_one()
         return self.state == "new" or self.state == "offer_received"
 
     @api.depends("postcode", "title")
