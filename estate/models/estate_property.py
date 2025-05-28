@@ -1,4 +1,4 @@
-from odoo import models, fields
+from odoo import models, fields, api
 from dateutil.relativedelta import relativedelta
 
 
@@ -44,6 +44,7 @@ class EstateProperty(models.Model):
     property_tag_ids = fields.Many2many("estate.property.tag", string="Property Tags")
     offer_ids = fields.One2many("estate.property.offer", "property_id", string="Offers")
 
+    @api.depends("postcode", "title")
     def _compute_display_name(self):
         for record in self:
             record.display_name = f"{record.postcode or ''} - {record.title or ''}"
