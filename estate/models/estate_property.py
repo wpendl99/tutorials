@@ -36,6 +36,8 @@ class EstateProperty(models.Model):
         default="new",
     )
     active = fields.Boolean("Active", default=True)
+    total_area = fields.Integer("Total Area", compute="_compute_total_area")
+    best_offer = fields.Float("Best Offer", digits=(10, 2), compute="_compute_best_offer")
 
     # Foreign IDs
     property_type_id = fields.Many2one("estate.property.type", string="Property Type")
@@ -48,6 +50,25 @@ class EstateProperty(models.Model):
     def _compute_display_name(self):
         for record in self:
             record.display_name = f"{record.postcode or ''} - {record.title or ''}"
+
+    @api.depends("living_area", "garden_area")
+    def _compute_total_area(self):
+        for record in self:
+            record.total_area = self.living_area + self.garden_area
+
+    @api.depends("offer_ids.price")
+    def _compute_best_offer(self):
+        for record in self:
+            record.best_offer = max(record.mapped("offer_ids.price"))
+
+    @api.onchange("garden")
+    def _onchange_garden(self):
+        if self.garden:
+            self.garden_area = 10
+            self.garden_orientation = "north"
+        else:
+            self.garden_area = 0
+            self.garden_orientation = None
 
 
 print(">>> EstateProperty model is being loaded")
