@@ -11,13 +11,13 @@
         <field name="model">estate.property.offer</field>
         <field name="arch" type="xml">
             <list string="offers">
-                <!-- These widths are doing nothing... But they are giving me my expected result so
-                I am leaving them  -->
                 <field name="price" />
-                <field name="partner_id" width="5%" />
-                <field name="validity" />
-                <field name="date_deadline" />
-                <field name="status" width="5%" />
+                <field name="partner_id" />
+                <field name="validity" string="Validity (days)" width="120px" />
+                <field name="date_deadline" width="240px" />
+                <button name="action_accept_offer" title="Accept" type="object" icon="fa-check" />
+                <button name="action_decline_offer" title="Decline" type="object" icon="fa-times" />
+                <field name="status" />
             </list>
         </field>
     </record>

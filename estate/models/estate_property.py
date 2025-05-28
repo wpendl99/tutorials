@@ -1,5 +1,11 @@
 from odoo import models, fields, api
+from odoo.exceptions import UserError
+from odoo.tools.translate import _
 from dateutil.relativedelta import relativedelta
+
+import logging
+
+_logger = logging.getLogger(__name__)
 
 
 class EstateProperty(models.Model):
@@ -46,6 +52,11 @@ class EstateProperty(models.Model):
     property_tag_ids = fields.Many2many("estate.property.tag", string="Property Tags")
     offer_ids = fields.One2many("estate.property.offer", "property_id", string="Offers")
 
+    def is_available(self):
+        # self.ensure_one()
+        _logger.debug("State called: %s", self.state)
+        return self.state == "new" or self.state == "offer_received"
+
     @api.depends("postcode", "title")
     def _compute_display_name(self):
         for record in self:
@@ -59,7 +70,7 @@ class EstateProperty(models.Model):
     @api.depends("offer_ids.price")
     def _compute_best_offer(self):
         for record in self:
-            record.best_offer = max(record.mapped("offer_ids.price"))
+            record.best_offer = max(record.mapped("offer_ids.price"), default=0)
 
     @api.onchange("garden")
     def _onchange_garden(self):
@@ -69,6 +80,23 @@ class EstateProperty(models.Model):
         else:
             self.garden_area = 0
             self.garden_orientation = None
+
+    # ACTIONS
+    def action_set_property_as_sold(self):
+        for record in self:
+            if record.state == "cancelled":
+                raise UserError(_("Cancelled properties can't be sold"))
+
+            record.state = "sold"
+        return True
+
+    def action_set_property_as_cancelled(self):
+        for record in self:
+            if record.state == "sold":
+                raise UserError(_("Sold properties can't be cancelled"))
+
+            record.state = "cancelled"
+        return True
 
 
 print(">>> EstateProperty model is being loaded")

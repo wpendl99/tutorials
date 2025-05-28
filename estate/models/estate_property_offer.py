@@ -1,4 +1,6 @@
 from odoo import models, fields, api
+from odoo.exceptions import UserError
+from odoo.tools.translate import _
 from dateutil.relativedelta import relativedelta
 
 
@@ -27,3 +29,33 @@ class EstatePropertyOffer(models.Model):
         for record in self:
             base_date = record.create_date.date() if record.create_date else fields.Datetime.today()
             record.validity = (record.date_deadline - base_date).days
+
+    # Actions
+    def action_accept_offer(self):
+        for record in self:
+            if record.property_id.offer_ids.filtered(lambda o: o.status == "accepted"):
+                raise UserError(_("Only one offer can be accepted for a property."))
+
+            record.status = "accepted"
+            record.property_id.state = "offer_accepted"
+            record.property_id.buyer_id = record.partner_id
+            record.property_id.selling_price = record.price
+        return True
+
+    def action_decline_offer(self):
+        for record in self:
+            record.status = "refused"
+
+            if not record.property_id.offer_ids.filtered(lambda o: o.status == "accepted"):
+                record.property_id.state = "offer_received"
+        return True
+
+    @api.model_create_multi
+    def create(self, vals):
+        offer = super().create(vals)
+
+        # Update the property state to 'offer_received' if it's still 'new'
+        if offer.property_id.state == "new":
+            offer.property_id.state = "offer_received"
+
+        return offer
