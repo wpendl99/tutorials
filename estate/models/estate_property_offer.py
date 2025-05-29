@@ -1,5 +1,5 @@
 from odoo import models, fields, api
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError, ValidationError
 from odoo.tools.translate import _
 from dateutil.relativedelta import relativedelta
 
@@ -17,9 +17,11 @@ class EstatePropertyOffer(models.Model):
     date_deadline = fields.Date("Deadline", compute="_compute_date_deadline", inverse="_inverse_date_deadline")
 
     # Foreign IDs
-    partner_id = fields.Many2one("res.partner", string="Partner", required=True)
-    property_id = fields.Many2one("estate.property", string="Property", required=True)
-    property_type_id = fields.Many2one(related="property_id.property_type_id", store=True, readonly=True)
+    partner_id = fields.Many2one("res.partner", string="Partner", required=True, ondelete="set default")
+    property_id = fields.Many2one("estate.property", string="Property", required=True, ondelete="cascade")
+    property_type_id = fields.Many2one(
+        related="property_id.property_type_id", store=True, readonly=True, ondelete="set null"
+    )
 
     _sql_constraints = [
         ("check_offer_price", "CHECK(price > 0)", "The offer price must be a positive value"),
@@ -58,10 +60,25 @@ class EstatePropertyOffer(models.Model):
 
     @api.model_create_multi
     def create(self, vals):
-        offer = super().create(vals)
+        offers = []
+        for val in vals:
+            property_id = val.get("property_id")
+            offer_price = val.get("price", 0)
 
-        # Update the property state to 'offer_received' if it's still 'new'
-        if offer.property_id.state == "new":
-            offer.property_id.state = "offer_received"
+            if property_id:
+                property = self.env["estate.property"].browse(property_id)
+                max_price = max(property.offer_ids.mapped("price"), default=0)
 
-        return offer
+                if offer_price < max_price:
+                    raise ValidationError(
+                        _("The offer must be higher than the current highest offer of %.2f") % max_price
+                    )
+
+                offer = super().create(val)
+
+                if offer.property_id.state == "new":
+                    offer.property_id.state = "offer_received"
+
+                offers.append(offer)
+
+        return offers
