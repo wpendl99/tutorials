@@ -59,26 +59,21 @@ class EstatePropertyOffer(models.Model):
         return True
 
     @api.model_create_multi
-    def create(self, vals):
-        offers = []
-        for val in vals:
-            property_id = val.get("property_id")
-            offer_price = val.get("price", 0)
+    def create(self, vals_list):
+        offers = super().create(vals_list)
+        for offer in offers:
+            property_id = offer.property_id
+            offer_price = offer.price
 
             if property_id:
-                property = self.env["estate.property"].browse(property_id)
-                max_price = max(property.offer_ids.mapped("price"), default=0)
+                max_price = max(property_id.offer_ids.filtered(lambda o: o.id != offer.id).mapped("price"), default=0)
 
                 if offer_price < max_price:
                     raise ValidationError(
                         _("The offer must be higher than the current highest offer of %.2f") % max_price
                     )
 
-                offer = super().create(val)
-
-                if offer.property_id.state == "new":
-                    offer.property_id.state = "offer_received"
-
-                offers.append(offer)
+                if property_id.state == "new":
+                    property_id.state = "offer_received"
 
         return offers

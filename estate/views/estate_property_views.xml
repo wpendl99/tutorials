@@ -54,7 +54,6 @@
                                     options="{'color_field': 'color'}" />
                             </div>
                         </div>
-
                     </t>
                 </templates>
             </kanban>
