@@ -12,6 +12,7 @@ _logger = logging.getLogger(__name__)
 class EstateProperty(models.Model):
     _name = "estate.property"
     _description = "Estate Property"
+    _order = "id desc"
 
     title = fields.Char("Title", required=True)
     description = fields.Text("Description")
