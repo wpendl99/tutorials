@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <t t-name="awesome_owl.card">
+        <div class="card d-inline-block m-2" style="width: 18rem;">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <h5 class="card-title mb-0 me-2"><t t-esc="props.title"/></h5>
+                    <button class="btn btn-sm btn-outline-secondary"
+                            t-on-click="toggle"
+                            t-att-aria-expanded="state.open ? 'true' : 'false'">
+                        <t t-esc="state.open ? 'Hide' : 'Show'"/>
+                    </button>
+                </div>
+                <!-- Only render the slot content when open -->
+                <div class="card-body" t-if="state.open">
+                    <t t-slot="default"/>
+                </div>
+            </div>
+        </div>
+    </t>
+
+</templates>

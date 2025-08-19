@@ -1,0 +1,27 @@
+<templates xml:space="preserve">
+  <t t-name="awesome_dashboard.SettingsDialog">
+        <Dialog title="'Dashboard Items'">
+            <div class="p-2" style="min-width:420px;">
+                <p class="text-muted mb-2">Choose which items to display:</p>
+                <div class="list-group">
+                    <t t-foreach="props.items" t-as="it" t-key="it.id">
+                        <label class="list-group-item d-flex align-items-center gap-2">
+                        <input type="checkbox"
+                                t-att-data-id="it.id"
+                                t-att-checked="state.checks[it.id] ? true : null"
+                                t-on-change="toggle"/>
+                        <span t-esc="it.description"/>
+                        </label>
+                    </t>
+                </div>
+            </div>
+
+            <t t-set-slot="footer">
+                <div class="d-flex justify-content-end gap-2">
+                <button class="btn btn-secondary" t-on-click="cancel">Cancel</button>
+                <button class="btn btn-primary" t-on-click="apply">Apply</button>
+                </div>
+            </t>
+        </Dialog>
+  </t>
+</templates>

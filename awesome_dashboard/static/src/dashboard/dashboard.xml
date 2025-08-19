@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="awesome_dashboard.AwesomeDashboard">
+        <Layout display="display" className="'o_dashboard h-100'">
+            <t t-set-slot="control-panel-always-buttons">
+                <div class="o_cp_buttons d-flex gap-2">
+                    <button class="btn btn-light" t-on-click="openSettings" title="Settings">
+                        <i class="fa fa-gear"/> <!-- gear icon -->
+                    </button>
+                    <button class="btn btn-primary" t-on-click="openCustomers">Customers</button>
+                    <button class="btn btn-secondary" t-on-click="openLeads">Leads</button>
+                </div>
+            </t>
+
+            <!-- RIGHT side: settings lives here in Odoo 18 -->
+            <t t-set-slot="control-panel-breadcrumbs-actions">
+                <div class="o_cp_right d-flex align-items-center gap-2">
+                    <button class="btn btn-light" t-on-click="openSettings" title="Settings">
+                    <i class="fa fa-gear"/>
+                    </button>
+                </div>
+            </t>
+
+            <div class="o_dashboard_grid p-3">
+                <t t-if="!statistics.loaded">
+                    <div class="text-muted">Loading statistics…</div>
+                </t>
+                <t t-if="statistics.loaded and statistics.error">
+                    <div class="alert alert-danger" role="alert" t-esc="statistics.error"/>
+                </t>
+
+                <t t-if="statistics.loaded and !statistics.error">
+                    <t t-foreach="items" t-as="item" t-key="item.id">
+                        <DashboardItem size="item.size || 1">
+                            <!-- Compute props dynamically (if item.props exists) -->
+                            <t t-set="itemProp" t-value="item.props ? item.props(statistics) : {'data': statistics}"/>
+                            <!-- Dynamic component + dynamic props -->
+                            <t t-component="item.Component" t-props="itemProp"/>
+                        </DashboardItem>
+                    </t>
+                </t>
+            </div>
+        </Layout>
+    </t>
+</templates>

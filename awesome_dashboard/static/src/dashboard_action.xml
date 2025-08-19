@@ -1,0 +1,6 @@
+<templates xml:space="preserve">
+  <t t-name="awesome_dashboard.AwesomeDashboardLoader">
+        <!-- Loads the bundle, then renders the component registered under lazy_components -->
+    <LazyComponent bundle="'awesome_dashboard.dashboard'" Component="'AwesomeDashboard'"/>
+  </t>
+</templates>

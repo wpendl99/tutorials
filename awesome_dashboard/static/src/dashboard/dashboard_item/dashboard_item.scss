@@ -1,0 +1,9 @@
+/* simple grid for dashboard items */
+.o_dashboard_grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+.o_dash_item {
+    min-height: 8rem; /* tweak as you like */
+}

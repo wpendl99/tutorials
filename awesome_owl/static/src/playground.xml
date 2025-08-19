@@ -1,9 +1,36 @@
-<?xml version="1.0" encoding="UTF-8" ?>
+<?xml version="1.0" encoding="UTF-8"?>
 <templates xml:space="preserve">
 
     <t t-name="awesome_owl.playground">
-        <div class="p-3">
-            hello world
+        <div class="p-3 border rounded bg-light">
+            <h2>hello world</h2>
+            <Counter onChange.bind="incrementSum"/>
+            <Counter onChange.bind="incrementSum"/>
+            <br />
+            <p class="mt-2">Total: <strong t-esc="state.sum"/></p>
+            <hr />
+            <Card title="'Card Title'" >
+                <p>This is plain content rendered through the default slot.</p>
+            </Card>
+            <Card title="'Another Card'">
+                <p>More content here.</p>
+            </Card>
+            <!-- Normal strings stay escaped -->
+            <Card title="'Escaped example'">
+                <p t-esc="state.rawHtml"></p>
+            </Card>
+
+            <!-- Marked-up strings render as HTML -->
+            <Card title="'Safe HTML example'">
+                <p t-raw="state.safeHtml"></p>
+            </Card>
+
+            <!-- Counter card -->
+            <Card title="'Counter Card'">
+                <Counter/>
+            </Card>
+            <hr />
+            <TodoList/>
         </div>
     </t>
 

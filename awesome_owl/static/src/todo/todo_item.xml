@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <t t-name="awesome_owl.todoItem">
+        <div class="o_todo_item" t-att-class="props.todo.isCompleted ? 'text-muted text-decoration-line-through' : ''">
+            <!-- Checkbox before the id; checked when completed -->
+            <input type="checkbox" class="me-1"
+                    t-att-checked="props.todo.isCompleted ? true : null"
+                    t-on-change="onToggle"/>
+            <span class="todo-id"><t t-esc="props.todo.id"/>. </span>
+            <span class="todo-desc">
+                <t t-esc="props.todo.description"/>
+            </span>
+
+            <!-- Delete icon (Font Awesome). Click to remove -->
+            <span class="fa fa-remove text-danger ms-2"
+                    title="Delete"
+                    style="cursor:pointer;"
+                    t-on-click="onRemove"/>
+        </div>
+    </t>
+
+</templates>
