@@ -47,13 +47,14 @@ class EstateProperty(models.Model):
     total_area = fields.Integer("Total Area", compute="_compute_total_area")
     best_offer = fields.Float("Best Offer", digits=(10, 2), compute="_compute_best_offer")
 
-    # Foreign IDs
+    # FOREIGN IDs
     property_type_id = fields.Many2one("estate.property.type", string="Property Type")
     salesman_id = fields.Many2one("res.users", string="Salesman", default=lambda self: self.env.user)
     buyer_id = fields.Many2one("res.partner", "Buyer", copy=False)
     property_tag_ids = fields.Many2many("estate.property.tag", string="Property Tags")
     offer_ids = fields.One2many("estate.property.offer", "property_id", string="Offers")
 
+    # CONTRAINTS
     _sql_constraints = [
         ("check_expected_price", "CHECK(expected_price > 0)", "The expected price must be a positive value"),
         ("check_selling_price", "CHECK(selling_price > 0)", "The selling price must be a positive value"),
@@ -69,10 +70,12 @@ class EstateProperty(models.Model):
             if float_compare(record.selling_price, min_selling_price, precision_digits=2) < 0:
                 raise ValidationError(_("The selling price cannot be lower than 90% of the expected price"))
 
+    # METHODS
     def is_available(self):
         self.ensure_one()
         return self.state == "new" or self.state == "offer_received"
 
+    # COMPUTED VALUES
     @api.depends("postcode", "title")
     def _compute_display_name(self):
         for record in self:
@@ -87,15 +90,6 @@ class EstateProperty(models.Model):
     def _compute_best_offer(self):
         for record in self:
             record.best_offer = max(record.mapped("offer_ids.price"), default=0)
-
-    @api.onchange("garden")
-    def _onchange_garden(self):
-        if self.garden:
-            self.garden_area = 10
-            self.garden_orientation = "north"
-        else:
-            self.garden_area = 0
-            self.garden_orientation = None
 
     # ACTIONS
     def action_set_property_as_sold(self):
@@ -113,6 +107,16 @@ class EstateProperty(models.Model):
 
             record.state = "cancelled"
         return True
+
+    # Triggers
+    @api.onchange("garden")
+    def _onchange_garden(self):
+        if self.garden:
+            self.garden_area = 10
+            self.garden_orientation = "north"
+        else:
+            self.garden_area = 0
+            self.garden_orientation = None
 
     @api.ondelete(at_uninstall=False)
     def _unlink_if_new_or_cancelled(self):
